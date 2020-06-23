@@ -1,88 +1,104 @@
-﻿
-namespace BLL
+﻿namespace BLL
 {
     /// <summary>
     /// gerencia os dados de conexão de cada base e dados
     /// </summary>
     public class DataBase
     {
-        public string Servidor { get; set; }
-        public string Usuario { get; set; }
-        public string Senha { get; set; }
-        public string Banco { get; set; }
-        public string TipoBanco { get; set; }
+        const string ARQUIVOMYSQL = @"\ConfigMySql.txt";
+        const string ARQUIVOSQL = @"\ConfigSql.txt";
 
-        public DataBase(string tipo, string operacao)
+        //estrutura de dads para conexao
+        public class DadosConexao
         {
-            TipoBanco = tipo;
-            Operacao(operacao);
-        }
-        public DataBase(string text1, string text2, string text3, string text4, string text5)
-        {
-            Servidor = text1;
-            Usuario = text2;
-            Senha = text3;
-            Banco = text4;
-            TipoBanco = text5;
-        }
+            public string Servidor { get; set; }
+            public string Usuario { get; set; }
+            public string Senha { get; set; }
+            public string Banco { get; set; }
+            public TipoBanco TipoBanco { get; set; }
 
-        public void Operacao(string operacao)
-        {
-            var nomeArquivo = string.Empty;
-
-
-            if (TipoBanco == "MySql")
+            //contrutor recebe apenas o tipo de banco, então busca lê as configurações salvas em arquivo txt
+            public DadosConexao(string tipobanco)
             {
-                nomeArquivo = @"\ConfigMySql.txt";
+                var dadosArquivo = new DataBase().Ler(DefinirTipoBanco(tipobanco));
 
-            }
-            else if (TipoBanco == "Sql")
-            {
-                nomeArquivo = @"\ConfigSql.txt";
+                Servidor = dadosArquivo[0];
+                Usuario = dadosArquivo[1];
+                Senha = Criptografia.Decrypt(dadosArquivo[2]);
+                Banco = dadosArquivo[3];
+                TipoBanco = DefinirTipoBanco(tipobanco);
             }
 
-            if (operacao == "salvar")
+            //contrutor recebe 5 parametros para criar um novo elemento na estrutura de Dados Conexão
+            public DadosConexao(string server, string user, string senha, string banco, string tipobanco)
             {
-
-                Salvar(nomeArquivo);
+                Servidor = server;
+                Usuario = user;
+                Senha = Criptografia.Crypt(senha);
+                Banco = banco;
+                TipoBanco = DefinirTipoBanco(tipobanco);
             }
-
-            else if (operacao == "ler")
-            {
-                Ler(nomeArquivo);
-            }
-
-        }
-        private void Salvar(string nomeArquivo)
-        {
-            new DAL.Arquivos().SalvarConfigs(Servidor, Usuario, Criptografia.Crypt(Senha), Banco, nomeArquivo);
         }
 
-        private void Ler(string nomeArquivo)
+        //Define os tipo de banco de dados possiveis
+        public static TipoBanco DefinirTipoBanco(string valor)
         {
-            var dadosArquivo = new DAL.Arquivos().LerDados(nomeArquivo);
+            const string MYSQL = "MySql";
+            if (valor == MYSQL)
+            {
+                return TipoBanco.MySql;
+            }
+            return TipoBanco.Sql;
+        }
+        public enum TipoBanco
+        {
+            MySql = 0,
+            Sql = 1
+        }
 
-            Servidor = dadosArquivo[0];
-            Usuario = dadosArquivo[1];
-            Senha = Criptografia.Decrypt(dadosArquivo[2]);
-            Banco = dadosArquivo[3];
+        public DataBase()
+        {
 
         }
 
-        public void TestarConexao()
+        //salva configurações de conexão em arquivo txt de acordo com o atributo TipoBanco da conexao
+        //o nome do arquivo é definidi de acordo com o TipoBanco
+        public void Salvar(DadosConexao dadosConexao)
         {
-            if (TipoBanco == "MySql")
+            if (dadosConexao.TipoBanco == TipoBanco.MySql)
             {
-                new DAL.ConexaoMySql(Servidor, Usuario, Senha, Banco).Testar();
-
+                new Arquivos().SalvarConfigs(dadosConexao, ARQUIVOMYSQL);
             }
-            else if (TipoBanco == "Sql")
+            else
             {
-                new DAL.ConexaoSQL(Servidor, Usuario, Senha, Banco).Testar();
+                new Arquivos().SalvarConfigs(dadosConexao, ARQUIVOSQL);
             }
-            
         }
 
-
+        //lê arquivo de conexão de acordo com to TipoBanco
+        public string[] Ler(TipoBanco tipoBanco)
+        {
+            if (tipoBanco == TipoBanco.MySql)
+            {
+                return new Arquivos().LerDados(ARQUIVOMYSQL);
+            }
+            else
+            {
+                return new Arquivos().LerDados(ARQUIVOSQL);
+            }
+        } 
+        
+        //testa a conexaop com o banco
+        public void TestarConexao(DadosConexao banco)
+        {
+            if (banco.TipoBanco == TipoBanco.MySql)
+            {
+                new DAL.ConexaoMySql(banco.Servidor, banco.Usuario, banco.Senha, banco.Banco).Testar();
+            }
+            else 
+            {
+                new DAL.ConexaoSQL(banco.Servidor, banco.Usuario, banco.Senha, banco.Banco).Testar();
+            }
+        }
     }
 }

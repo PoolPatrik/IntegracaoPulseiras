@@ -4,7 +4,7 @@ namespace DAL
 {
     public class ConexaoSQL
     {
-        private string connectionString;
+        private readonly string connectionString;
 
         //Construtor
         public ConexaoSQL(string servidor, string usuario, string senha, string banco)

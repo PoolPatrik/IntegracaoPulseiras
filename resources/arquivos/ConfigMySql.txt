@@ -1,4 +1,4 @@
-servidor:162.241.61.33
-usuario:hpist874_catraca
-senha:mk~|kmk}J
-banco:hpist874_catracas
+servidor: 162.241.61.33
+usuario: hpist874_catraca
+senha: mk~|kmk}J
+banco: hpist874_catracas

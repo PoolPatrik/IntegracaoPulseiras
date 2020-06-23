@@ -1,4 +1,4 @@
-servidor:.\sqlexpress
-usuario:sa
-senha:i>=@C;
-banco:SecullumAcessoNet2
+servidor: .\sqlexpress
+usuario: sa
+senha: i>=@C:
+banco: SecullumAcessoNet2

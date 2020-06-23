@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Utils\Arquivos.cs" />
     <Compile Include="Utils\Importador.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Pulseira.cs" />

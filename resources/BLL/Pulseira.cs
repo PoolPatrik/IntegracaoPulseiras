@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DAL;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -10,84 +11,67 @@ namespace BLL
     /// </summary>
     public class Pulseira
     {
-        public string Codigo { get; set; }
-        public DateTime DateTime { get; set; }
-
-        private string _status;
-        public string Status
+        public class EstruturaPulseira
         {
-            get => _status;
-            set
-            {
-                if (value == "1") //Estado 1 na tabela externa indica livre
-                    _status = "0"; //Estado 0 na tabela de integração do acesso.net indica livre
-                else
-                    _status = "1"; //Estado 1 representa bloqueado na tabela do Acesso.net
-            }
+            public string Codigo { get; set; }
+            public DateTime DateTime { get; set; }
+            public Status Estado { get; set; }
         }
 
+        public static Status DefinirEstado(int valor)
+        {
+            const int ESTADOLIVREINTEGRACAO = 1;
+
+            if (valor == ESTADOLIVREINTEGRACAO)
+            {
+                return Status.Livre;
+            }
+            return Status.Bloqueado;
+        }
+
+        public enum Status
+        {
+            Livre = 0,
+            Bloqueado = 1
+        }
         public Pulseira()
         {
 
         }
-        public Pulseira(string codigo, string estado)
-        {
-            Codigo = codigo;
-            Status = estado;
-        }
 
         //grava lista de pulseira na tabela de integracao_externa do Acesso.net
-        public void GravarPulseiraSql(DataBase bancoSql)
+        public void GravarPulseiraSql(ConexaoSQL bancoSql, EstruturaPulseira estruturaPulseira)
         {
+            var queryString = $"insert into integracao_externa (n_folha, n_identificador, estado)values(" +
+                $"'{estruturaPulseira.Codigo}','{estruturaPulseira.Codigo}', '{estruturaPulseira.Estado.GetHashCode()}');";
 
-            string queryString = "insert into integracao_externa (n_folha, n_identificador, estado)values('" + this.Codigo + "','" + this.Codigo + "', '" + this.Status + "');";
-
-            new DAL.ConexaoSQL(bancoSql.Servidor, bancoSql.Usuario, bancoSql.Senha, bancoSql.Banco).ExecutarComando(queryString);
-
+            bancoSql.ExecutarComando(queryString);
         }
-        //Limpa tabela de integração externa do banco do Acesso.net
-        public static void LimparIntegracaoExterna(DataBase bancoSql)
+
+        //Limpa tabela de integração externa do banco do Acesso.net 
+        public void LimparIntegracaoExterna(ConexaoSQL conexao)
         {
-
-            string queryString = "delete integracao_externa where LEITURA_STATUS = 'true'";
-
-            new DAL.ConexaoSQL(bancoSql.Servidor, bancoSql.Usuario, bancoSql.Senha, bancoSql.Banco).ExecutarComando(queryString);
-
+            var queryString = "delete integracao_externa where LEITURA_STATUS = 'true'";
+            conexao.ExecutarComando(queryString);
         }
 
         //lê todos os cadastros existentes na base externa
-        public static List<Pulseira> LerPulseirasMySql(DataBase bancoMySql, DateTime data)
+        public List<EstruturaPulseira> LerPulseirasMySql(ConexaoMySql conexao, DateTime data)
         {
-
-            string queryString = $"select * from pulseiras where data_alteracao >= '{data.ToString()}'";
-            List<Pulseira> listaDePulseiras;
-
-            var dataTable = new DAL.ConexaoMySql(bancoMySql.Servidor, bancoMySql.Usuario, bancoMySql.Senha, bancoMySql.Banco).ExecutarComando(queryString);
-
-            listaDePulseiras = CriaListaDePulseiras(dataTable);
-
-            return listaDePulseiras;
-
+            var queryString = $"select * from pulseiras where data_alteracao >= '{data}'";
+            var dataTable = conexao.ExecutarComando(queryString);
+            return CriaListaDePulseiras(dataTable);
         }
 
         //Cria lista de pulseiras a partir do datatable recebido
-        private static List<Pulseira> CriaListaDePulseiras(DataTable dt)
+        private List<EstruturaPulseira> CriaListaDePulseiras(DataTable dt)
         {
-            var list = new List<Pulseira>();
-
+            return dt.AsEnumerable().Select(linha => new EstruturaPulseira
             {
-
-                list = dt.AsEnumerable().Select(linha => new Pulseira
-                {
-                    Codigo = linha.Field<String>("descricao"),
-                    DateTime = linha.Field<DateTime>("data_alteracao"),
-                    Status = linha.Field<Int32>("status").ToString()
-                }).ToList();
-
-                return list;
-            }
-
+                Codigo = linha.Field<String>("descricao"),
+                DateTime = linha.Field<DateTime>("data_alteracao"),
+                Estado = DefinirEstado(Convert.ToInt32(linha.Field<int>("status")))
+            }).ToList();
         }
-
     }
 }

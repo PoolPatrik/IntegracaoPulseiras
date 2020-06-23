@@ -66,7 +66,7 @@
             this.btn_carregar.TabIndex = 25;
             this.btn_carregar.Text = "Carregar Conexões";
             this.btn_carregar.UseVisualStyleBackColor = true;
-            this.btn_carregar.Click += new System.EventHandler(this.btn_carregar_Click);
+            this.btn_carregar.Click += new System.EventHandler(this.Btn_carregar_Click);
             // 
             // btn_salvarMySql
             // 
@@ -76,7 +76,7 @@
             this.btn_salvarMySql.TabIndex = 1;
             this.btn_salvarMySql.Text = "Salvar Conexao";
             this.btn_salvarMySql.UseVisualStyleBackColor = true;
-            this.btn_salvarMySql.Click += new System.EventHandler(this.btn_salvarConfig_Click);
+            this.btn_salvarMySql.Click += new System.EventHandler(this.Btn_salvarConfig_Click);
             // 
             // btn_importar
             // 
@@ -86,7 +86,7 @@
             this.btn_importar.TabIndex = 0;
             this.btn_importar.Text = "Importar";
             this.btn_importar.UseVisualStyleBackColor = true;
-            this.btn_importar.Click += new System.EventHandler(this.btn_importar_Click);
+            this.btn_importar.Click += new System.EventHandler(this.Btn_importar_Click);
             // 
             // groupBox2
             // 
@@ -140,7 +140,7 @@
             this.link_testeSql.TabIndex = 21;
             this.link_testeSql.TabStop = true;
             this.link_testeSql.Text = "Testar Conexao";
-            this.link_testeSql.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.link_testeSql_LinkClicked);
+            this.link_testeSql.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.Link_testeSql_LinkClicked);
             // 
             // txt_senhaSql
             // 
@@ -218,7 +218,7 @@
             this.link_testeMySql.TabIndex = 11;
             this.link_testeMySql.TabStop = true;
             this.link_testeMySql.Text = "Testar Conexao";
-            this.link_testeMySql.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.link_testeMySql_LinkClicked);
+            this.link_testeMySql.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.Link_testeMySql_LinkClicked);
             // 
             // txt_serverMySql
             // 
@@ -265,6 +265,7 @@
             // 
             this.txt_senhaMySql.Location = new System.Drawing.Point(112, 111);
             this.txt_senhaMySql.Name = "txt_senhaMySql";
+            this.txt_senhaMySql.PasswordChar = '*';
             this.txt_senhaMySql.Size = new System.Drawing.Size(213, 20);
             this.txt_senhaMySql.TabIndex = 8;
             // 
@@ -291,7 +292,7 @@
             this.progressBar1.Size = new System.Drawing.Size(695, 23);
             this.progressBar1.TabIndex = 25;
             // 
-            // Form1
+            // WF_configurador
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -310,7 +311,7 @@
             this.Controls.Add(this.btn_importar);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupBox2);
-            this.Name = "Form1";
+            this.Name = "WF_configurador";
             this.Text = "Form1";
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();

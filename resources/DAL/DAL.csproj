@@ -57,7 +57,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Arquivos.cs" />
     <Compile Include="ConexaoMySql.cs" />
     <Compile Include="ConexaoSQL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 namespace BLL
 {
     /// <summary>
-    /// Responsavel por gravar los de erros e de funcinamento
+    /// Responsavel por gravar logs de erros e de funcinamento
     /// </summary>
     public class Logs
     {
         public static void Gravar(string texto, bool erro)
         {
-            string local = string.Empty;
+            string local;
 
             //determina o tipo de log de acordo com o paramentro recebido
             if (erro == false)
